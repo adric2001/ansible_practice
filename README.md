@@ -4,6 +4,16 @@ A comprehensive, hands-on curriculum of **20 progressive practice exercises** de
 
 ---
 
+## 🧭 Multi-Repository DevOps Hub Navigation
+
+This repository is part of the **DevOps Practice Ecosystem**. You can jump directly between practice tracks or view the central orchestrator:
+
+- 🌐 **[Central Practice Hub Repo](https://github.com/adric2001/devops_practice)** — The unified dashboard & cross-tool integration guides.
+- 📦 **[Ansible Practice Suite](https://github.com/adric2001/ansible_practice)** — (You are here) 20 exercises mastering configuration management and automation.
+- 🏗️ **[Terraform Practice Suite](https://github.com/adric2001/terraform_practice)** — 21 exercises mastering Infrastructure as Code.
+
+---
+
 ## 📚 Curriculum Roadmap
 
 | # | Exercise | Difficulty | Key Focus Areas |
