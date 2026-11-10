@@ -30,3 +30,4 @@
       ansible.builtin.file:
         path: /tmp/ansible_callback_test.txt
         state: absent
+

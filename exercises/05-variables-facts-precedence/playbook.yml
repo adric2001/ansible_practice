@@ -33,3 +33,4 @@
     # TODO: Use ansible.builtin.copy to write a formatted JSON report to /tmp/system_report.json
     - name: Save report to /tmp/system_report.json
       # Fill in copy module
+

@@ -18,3 +18,4 @@
   ansible.builtin.set_fact:
     database_endpoint: "postgresql://{{ inventory_hostname }}:{{ db_port }}/{{ db_name }}"
     cacheable: true
+

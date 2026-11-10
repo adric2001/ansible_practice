@@ -26,3 +26,4 @@
     # - JWT_KEY
     - name: Render environment file with decrypted secrets
       # Fill in task
+

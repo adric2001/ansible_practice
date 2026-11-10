@@ -121,7 +121,8 @@ def test_playbook_syntax():
         ("exercises/18-custom-callback-plugins/solution/playbook.yml", []),
         ("exercises/19-testing-and-linting/solution/refactored_clean_playbook.yml", []),
         ("exercises/19-testing-and-linting/solution/verify.yml", []),
-        ("exercises/20-security-hardening-and-compliance/solution/playbook.yml", [])
+        ("exercises/20-security-hardening-and-compliance/solution/playbook.yml", []),
+        ("exercises/21-async-and-polling/solution/playbook.yml", [])
     ]
     for pb, extra_args in playbooks:
         if not os.path.exists(pb):

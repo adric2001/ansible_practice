@@ -46,3 +46,4 @@ You need to build three custom filters in `filter_plugins/custom_filters.py`:
 # Execute against localhost
 ansible-playbook -i "localhost," -c local playbook.yml
 ```
+

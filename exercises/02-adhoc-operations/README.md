@@ -61,3 +61,4 @@ Run your challenge script to test:
 - For `ansible.builtin.setup`, use the `filter` argument: `-a "filter=ansible_distribution*"` or `-a "filter=ansible_memtotal_mb"`.
 - For single-line output, append `-o`.
 - Module names should use fully qualified collection names (FQCN) where possible: `ansible.builtin.ping`, `ansible.builtin.copy`, `ansible.builtin.user`, etc.
+

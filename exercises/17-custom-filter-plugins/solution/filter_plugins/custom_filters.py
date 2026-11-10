@@ -49,3 +49,4 @@ class FilterModule(object):
             return []
         parts = str(string_val).split(delimiter)
         return [p.strip() for p in parts if p.strip()]
+

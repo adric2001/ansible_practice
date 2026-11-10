@@ -10,3 +10,4 @@
     src: upstream.conf.j2
     dest: "{{ lab_root }}/lb/loadbalancer.conf"
     mode: '0644'
+

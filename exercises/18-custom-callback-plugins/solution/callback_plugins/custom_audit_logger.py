@@ -74,3 +74,4 @@ class CallbackModule(CallbackBase):
         self._write_record("PLAYBOOK_FINISHED", {
             "recap": recap
         })
+

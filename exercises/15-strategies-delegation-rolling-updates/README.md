@@ -53,3 +53,4 @@ Open `playbook.yml` and implement the rolling update workflow.
 # Execute rolling deployment
 ansible-playbook -i inventory.ini playbook.yml
 ```
+

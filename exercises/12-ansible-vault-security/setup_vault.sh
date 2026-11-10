@@ -24,3 +24,4 @@ ansible-vault encrypt vault_secret.yml --vault-password-file .vault_password
 
 echo ">> Vault encrypted successfully!"
 echo "Inspect with: ansible-vault view vault_secret.yml --vault-password-file .vault_password"
+

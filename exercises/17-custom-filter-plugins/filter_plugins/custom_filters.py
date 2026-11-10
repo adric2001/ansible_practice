@@ -14,3 +14,4 @@ class FilterModule(object):
         }
 
     # TODO: Implement bytes_to_human, mask_secret, and split_and_trim
+

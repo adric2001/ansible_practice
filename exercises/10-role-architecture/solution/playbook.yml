@@ -40,3 +40,4 @@
     - name: 5. Display role execution success
       ansible.builtin.debug:
         msg: "Role successfully tested with both default and overridden parameters!"
+

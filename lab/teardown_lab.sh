@@ -7,3 +7,4 @@ echo "=== [Ansible Practice Lab Teardown] ==="
 cd "${SCRIPT_DIR}"
 docker compose down -v --remove-orphans
 echo ">> Lab containers stopped and cleaned up."
+

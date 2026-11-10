@@ -57,3 +57,4 @@ ANSIBLE_CALLBACKS_ENABLED=custom_audit_logger ansible-playbook -i "localhost," -
 # Inspect the generated audit log
 cat /tmp/ansible_callback_audit.jsonl
 ```
+

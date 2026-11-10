@@ -5,3 +5,4 @@ security_audit_level: STANDARD
 security_banner_enabled: true
 security_admin_group: secadmin
 security_admin_gid: 3000
+

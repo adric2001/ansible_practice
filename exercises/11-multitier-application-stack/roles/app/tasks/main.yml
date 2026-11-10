@@ -17,3 +17,4 @@
       DATABASE_URL={{ resolved_db_url }}
       WORKERS=4
     mode: '0644'
+

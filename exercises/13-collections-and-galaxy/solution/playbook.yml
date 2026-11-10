@@ -44,3 +44,4 @@
     - name: 5. Display success confirmation
       ansible.builtin.debug:
         msg: "Successfully used community.general collection modules with strict FQCN standard!"
+

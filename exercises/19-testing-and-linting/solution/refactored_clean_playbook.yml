@@ -38,3 +38,4 @@
         dest: "{{ app_dir }}/test.txt"
         content: "Idempotent linted test payload\n"
         mode: '0644'
+

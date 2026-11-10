@@ -60,3 +60,4 @@ ansible-playbook -i "localhost," -c local refactored_clean_playbook.yml
 # Run automated verification suite
 ansible-playbook -i "localhost," -c local verify.yml
 ```
+

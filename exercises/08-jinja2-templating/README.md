@@ -56,3 +56,4 @@ ansible-playbook -i "localhost," -c local playbook.yml
 # Inspect rendered configuration
 cat /tmp/ansible_template_lab/nginx.conf
 ```
+

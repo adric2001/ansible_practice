@@ -65,3 +65,4 @@
         - "{{ base_dir }}/config/motd"
         - "{{ base_dir }}/config/security.conf"
         - "{{ base_dir }}/current_config"
+

@@ -55,3 +55,4 @@
     - name: 6. Display generated report
       ansible.builtin.debug:
         msg: "Report generated at /tmp/system_report.json for {{ inventory_hostname }}"
+

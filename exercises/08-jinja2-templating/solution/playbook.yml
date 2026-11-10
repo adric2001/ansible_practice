@@ -58,3 +58,4 @@
           - "'listen 443 ssl' in grep_check.stdout"
           - "'location /api/v1/auth' in grep_check.stdout"
         success_msg: "Jinja2 template rendered all upstream, SSL, and routing blocks perfectly!"
+

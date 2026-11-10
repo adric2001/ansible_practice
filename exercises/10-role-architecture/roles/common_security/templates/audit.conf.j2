@@ -7,3 +7,4 @@ AUDIT_LOG_DESTINATION={{ security_base_dir }}/audit.log
 BANNER_ENABLED={{ security_banner_enabled | bool }}
 ADMIN_GROUP={{ security_admin_group }}
 TIMESTAMP={{ lookup('pipe', 'date -u +%Y-%m-%dT%H:%M:%SZ') }}
+

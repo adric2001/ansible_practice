@@ -1,0 +1,35 @@
+---
+# Starter Playbook: Asynchronous Execution & Polling
+- name: Practice Async Operations
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    lab_dir: /tmp/ansible_async_lab
+
+  tasks:
+    - name: Prepare test directory
+      ansible.builtin.file:
+        path: "{{ lab_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Task 1: Fire-and-forget background job
+    # TODO: Run a shell command sleep 3, with async: 30 and poll: 0
+    # Register the result as async_job
+    - name: Launch simulated background task
+      # Fill in command, async, poll, and register
+
+    # Task 2: Parallel immediate task
+    - name: Perform non-blocking immediate setup
+      ansible.builtin.copy:
+        dest: "{{ lab_dir }}/parallel_task.txt"
+        content: "Completed while background task was still running\n"
+        mode: '0644'
+
+    # Task 3: Poll for completion
+    # TODO: Use ansible.builtin.async_status with jid: "{{ async_job.ansible_job_id }}"
+    # and until: job_result.finished
+    - name: Wait for background task to complete
+      # Fill in async_status

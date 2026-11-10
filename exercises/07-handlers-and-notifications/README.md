@@ -61,3 +61,4 @@ ansible-playbook -i "localhost," -c local playbook.yml
 # 2. Second run: idempotency check (no handlers should fire)
 ansible-playbook -i "localhost," -c local playbook.yml
 ```
+

@@ -44,3 +44,4 @@
     - name: 5. Display success confirmation (masking sensitive values)
       ansible.builtin.debug:
         msg: "Vault successfully decrypted! API Key length: {{ payment_gateway_api_key | length }} characters."
+

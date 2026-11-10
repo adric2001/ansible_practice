@@ -60,3 +60,4 @@ ansible-inventory -i dynamic_inventory.py --list
 # Execute playbook against dynamic inventory
 ansible-playbook -i dynamic_inventory.py playbook.yml
 ```
+

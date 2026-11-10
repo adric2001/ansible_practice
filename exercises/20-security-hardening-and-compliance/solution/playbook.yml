@@ -68,3 +68,4 @@
           - "'PermitRootLogin no' in ssh_compliance_check.stdout"
           - "'PasswordAuthentication no' in ssh_compliance_check.stdout"
         success_msg: "CIS Security hardening baseline verified successfully!"
+

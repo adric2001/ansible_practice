@@ -15,3 +15,4 @@
 # TODO: Play 2: Deploy Application Tier on 'appservers' using role 'app'
 
 # TODO: Play 3: Deploy Load Balancer Tier on 'loadbalancers' using role 'nginx_lb'
+

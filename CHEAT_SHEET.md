@@ -192,3 +192,4 @@ ansible-vault encrypt_string 'MySecretPassword' --name 'db_password'
         path: /tmp/migration.lock
         state: absent
 ```
+

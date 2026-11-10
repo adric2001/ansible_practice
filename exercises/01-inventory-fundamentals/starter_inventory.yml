@@ -14,3 +14,4 @@ all:
           ansible_host: 10.0.0.1
           ansible_port: 2200
     # TODO: Define web group, databases group, production group, and staging group
+

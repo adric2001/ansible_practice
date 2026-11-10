@@ -57,3 +57,4 @@ ansible-playbook --syntax-check playbook.yml
 # Execute against localhost
 ansible-playbook -i "localhost," -c local playbook.yml
 ```
+

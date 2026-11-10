@@ -81,3 +81,4 @@ ansible-inventory -i starter_inventory.yml --graph
 - Group variables in INI are declared with the `[group_name:vars]` header.
 - In YAML, child groups go under `children:`, and group variables go under `vars:`.
 - Check the `solution/` directory when you're done or if you get stuck.
+

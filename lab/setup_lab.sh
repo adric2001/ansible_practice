@@ -33,3 +33,4 @@ echo " - db01  (Port 2223)"
 echo ""
 echo "Test connectivity with:"
 echo " ansible -i lab/inventory.ini all -m ping"
+

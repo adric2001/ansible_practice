@@ -48,3 +48,4 @@ echo "8. Cleaning up test file:"
 ansible "${HOSTS}" -i "${INV}" ${EXTRA_OPTS} -m ansible.builtin.file -a "path=/tmp/security_alert.txt state=absent"
 
 echo "=== All Ad-Hoc Solutions Completed Successfully! ==="
+

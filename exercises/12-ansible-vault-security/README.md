@@ -56,3 +56,4 @@ ansible-playbook -i "localhost," -c local --vault-password-file .vault_password 
 # Verify the rendered file contains the decrypted secret
 cat /tmp/ansible_vault_lab/payment_service.env
 ```
+

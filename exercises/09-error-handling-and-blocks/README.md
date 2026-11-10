@@ -49,3 +49,4 @@ ansible-playbook -i "localhost," -c local playbook.yml
 ls -la /tmp/ansible_db_lab/
 cat /tmp/ansible_db_lab/audit.log
 ```
+

@@ -37,3 +37,4 @@
     # TODO: Use ansible.builtin.file with state=link to link {{ base_dir }}/current_config -> {{ base_dir }}/config
     - name: Create symlink to current config
       # Fill in module and parameters
+

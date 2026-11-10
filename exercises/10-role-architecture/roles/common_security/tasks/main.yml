@@ -22,3 +22,4 @@
 - name: Record role execution summary
   ansible.builtin.debug:
     msg: "common_security role applied successfully! Level: {{ security_audit_level }}"
+

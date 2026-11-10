@@ -1,0 +1,55 @@
+---
+# Reference Solution: Asynchronous Execution & Polling
+- name: Practice Async Operations
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    lab_dir: /tmp/ansible_async_lab
+
+  tasks:
+    - name: 1. Prepare test directory
+      ansible.builtin.file:
+        path: "{{ lab_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 2. Launch long-running simulated background task (Fire-and-Forget)
+      ansible.builtin.shell: |
+        sleep 2
+        echo "ASYNC_DATA_PROCESSED_SUCCESS" > {{ lab_dir }}/export.dat
+      async: 30
+      poll: 0
+      register: background_job
+
+    - name: 3. Verify background job dispatched with job ID
+      ansible.builtin.assert:
+        that:
+          - background_job.ansible_job_id is defined
+          - background_job.started == 1
+
+    - name: 4. Perform non-blocking immediate task while background task runs
+      ansible.builtin.copy:
+        dest: "{{ lab_dir }}/parallel_task.txt"
+        content: "Completed concurrently while background job {{ background_job.ansible_job_id }} was active.\n"
+        mode: '0644'
+
+    - name: 5. Poll background task until completion
+      ansible.builtin.async_status:
+        jid: "{{ background_job.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 20
+      delay: 1
+
+    - name: 6. Assert background data was written
+      ansible.builtin.command:
+        cmd: "grep 'ASYNC_DATA_PROCESSED_SUCCESS' {{ lab_dir }}/export.dat"
+      register: data_check
+      changed_when: false
+
+    - name: 7. Cleanup test directory
+      ansible.builtin.file:
+        path: "{{ lab_dir }}"
+        state: absent

@@ -54,3 +54,4 @@ You are deploying a 3-tier microservice:
 # Execute multi-play deployment against inventory
 ansible-playbook -i inventory.ini site.yml
 ```
+

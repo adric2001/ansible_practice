@@ -20,3 +20,4 @@ class CallbackModule(CallbackBase):
         # TODO: Initialize tracking structures
 
     # TODO: Implement v2_runner_on_ok, v2_runner_on_failed, v2_playbook_on_stats
+

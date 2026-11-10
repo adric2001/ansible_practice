@@ -41,3 +41,4 @@
     # TODO: Use ansible.builtin.template to render templates/nginx.conf.j2 to {{ output_dir }}/nginx.conf
     - name: Render dynamic Nginx configuration
       # Fill in template task
+

@@ -28,6 +28,7 @@ A comprehensive, hands-on curriculum of **20 progressive practice exercises** de
 | **18** | [`18-custom-callback-plugins`](exercises/18-custom-callback-plugins) | 🔴 Advanced | Event interceptors, structured JSON audit logging |
 | **19** | [`19-testing-and-linting`](exercises/19-testing-and-linting) | 🔴 Advanced | Refactoring anti-patterns, Molecule style `assert` tests |
 | **20** | [`20-security-hardening-and-compliance`](exercises/20-security-hardening-and-compliance) | 🔴 Advanced | CIS benchmark baseline, SSH & kernel sysctl hardening |
+| **21** | [`21-async-and-polling`](exercises/21-async-and-polling) | 🔴 Advanced | Asynchronous execution (`async`, `poll`), `async_status` monitoring |
 
 ---
 
@@ -89,3 +90,4 @@ Run the included automated verification runner at any time to validate your synt
 ## 📖 Additional Resources
 - [Ansible Quick Reference Cheat Sheet](CHEAT_SHEET.md)
 - [Official Ansible Documentation](https://docs.ansible.com/ansible/latest/)
+

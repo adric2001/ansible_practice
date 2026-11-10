@@ -45,3 +45,4 @@ When finished practicing:
 ```bash
 ./lab/teardown_lab.sh
 ```
+

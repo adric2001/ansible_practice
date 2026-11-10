@@ -89,3 +89,4 @@
     - name: 5. Display success confirmation
       ansible.builtin.debug:
         msg: "Error handling verified: Failure was caught, data rolled back, lock removed, and audit trail written!"
+

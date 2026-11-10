@@ -19,3 +19,4 @@
 
     # Violation 4: Shell append instead of lineinfile (non-idempotent!)
     - shell: echo "LOG_LEVEL=DEBUG" >> /tmp/bad_practice_dir/app.conf
+

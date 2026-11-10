@@ -12,3 +12,4 @@
           | Role: {{ role }}
           | Region: {{ region }}
           | IP: {{ ansible_host }}
+
