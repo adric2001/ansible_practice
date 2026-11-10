@@ -53,3 +53,4 @@
       ansible.builtin.file:
         path: "{{ lab_dir }}"
         state: absent
+

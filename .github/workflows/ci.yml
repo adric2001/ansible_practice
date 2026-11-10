@@ -28,3 +28,4 @@ jobs:
       - name: Run Validation Suite
         run: |
           ./scripts/validate.sh
+

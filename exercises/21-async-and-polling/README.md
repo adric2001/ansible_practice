@@ -44,3 +44,4 @@ Open `playbook.yml` and implement the async pattern.
 # Execute against localhost
 ansible-playbook -i "localhost," -c local playbook.yml
 ```
+
