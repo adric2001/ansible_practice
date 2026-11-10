@@ -1,0 +1,74 @@
+---
+# Reference Solution: Handlers and Notifications
+- name: Practice Handlers and Notifications
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    lab_dir: /tmp/ansible_handlers_lab
+
+  tasks:
+    - name: 1. Ensure lab directory exists
+      ansible.builtin.file:
+        path: "{{ lab_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 2. Write main web server configuration
+      ansible.builtin.copy:
+        dest: "{{ lab_dir }}/nginx.conf"
+        content: |
+          worker_processes auto;
+          events { worker_connections 1024; }
+          http {
+              include       mime.types;
+              default_type  application/octet-stream;
+              sendfile        on;
+              keepalive_timeout  65;
+          }
+        mode: '0644'
+      notify: "reload web tier"
+
+    - name: 3. Write SSL virtual host configuration
+      ansible.builtin.copy:
+        dest: "{{ lab_dir }}/vhost.conf"
+        content: |
+          server {
+              listen 443 ssl;
+              server_name practice.local;
+              ssl_certificate /etc/ssl/certs/cert.pem;
+          }
+        mode: '0644'
+      notify: "reload web tier"
+
+    - name: 4. Flush handlers now (execute pending handlers immediately)
+      ansible.builtin.meta: flush_handlers
+
+    - name: 5. Execute downstream healthcheck after flushed handlers
+      ansible.builtin.stat:
+        path: "{{ lab_dir }}/service_reloaded.flag"
+      register: restart_flag
+      failed_when: not restart_flag.stat.exists
+
+    - name: 6. Assert reload flag exists and contains timestamp
+      ansible.builtin.assert:
+        that:
+          - restart_flag.stat.exists
+        success_msg: "Handlers successfully flushed before running post-deploy verification!"
+
+  handlers:
+    - name: Handle Web Reload
+      ansible.builtin.copy:
+        dest: "{{ lab_dir }}/service_reloaded.flag"
+        content: "RELOADED_AT_{{ lookup('pipe', 'date +%s') }}"
+        mode: '0644'
+      listen: "reload web tier"
+
+    - name: Handle Metrics Log
+      ansible.builtin.lineinfile:
+        path: "{{ lab_dir }}/audit.log"
+        create: true
+        line: "CONFIG_RELOAD_EVENT_TRIGGERED"
+        mode: '0644'
+      listen: "reload web tier"

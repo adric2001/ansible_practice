@@ -1,0 +1,7 @@
+---
+# Default variables for common_security role (easily overridden by consumer)
+security_base_dir: /tmp/common_security_lab
+security_audit_level: STANDARD
+security_banner_enabled: true
+security_admin_group: secadmin
+security_admin_gid: 3000

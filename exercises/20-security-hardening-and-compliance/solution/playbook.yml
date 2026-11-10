@@ -1,0 +1,70 @@
+---
+# Reference Solution: CIS Security Hardening & Compliance Automation
+- name: Apply CIS Security Hardening Baseline
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    hardening_root: /tmp/compliance_lab
+    ssh_port: 2222
+    ssh_permit_root_login: "no"
+    ssh_password_authentication: "no"
+    ssh_max_auth_tries: 3
+    ssh_client_alive_interval: 300
+    ssh_client_alive_count_max: 0
+
+    kernel_security_params:
+      - { param: "net.ipv4.ip_forward", value: "0" }
+      - { param: "net.ipv4.conf.all.send_redirects", value: "0" }
+      - { param: "net.ipv4.conf.default.send_redirects", value: "0" }
+      - { param: "net.ipv4.conf.all.accept_source_route", value: "0" }
+      - { param: "net.ipv4.tcp_syncookies", value: "1" }
+      - { param: "fs.suid_dumpable", value: "0" }
+
+  tasks:
+    - name: 1. Ensure compliance target directories exist with strict permissions
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "{{ hardening_root }}", mode: '0755' }
+        - { path: "{{ hardening_root }}/ssh", mode: '0700' }
+        - { path: "{{ hardening_root }}/sysctl", mode: '0755' }
+        - { path: "{{ hardening_root }}/secure_keys", mode: '0700' }
+
+    - name: 2. Deploy hardened OpenSSH daemon configuration
+      ansible.builtin.template:
+        src: templates/sshd_config.j2
+        dest: "{{ hardening_root }}/ssh/sshd_config"
+        mode: '0600'
+
+    - name: 3. Deploy hardened kernel sysctl parameters
+      ansible.builtin.copy:
+        dest: "{{ hardening_root }}/sysctl/99-security.conf"
+        content: |
+          # CIS Kernel Hardening Parameters
+          {% for item in kernel_security_params %}
+          {{ item.param }} = {{ item.value }}
+          {% endfor %}
+        mode: '0644'
+
+    - name: 4. Ensure restricted file permissions on sensitive key store
+      ansible.builtin.file:
+        path: "{{ hardening_root }}/secure_keys"
+        mode: '0700'
+        state: directory
+
+    - name: 5. Verify and assert compliance controls
+      ansible.builtin.command:
+        cmd: "grep -E '(PermitRootLogin no|PasswordAuthentication no)' {{ hardening_root }}/ssh/sshd_config"
+      register: ssh_compliance_check
+      changed_when: false
+
+    - name: 6. Assert all CIS baseline requirements are met
+      ansible.builtin.assert:
+        that:
+          - "'PermitRootLogin no' in ssh_compliance_check.stdout"
+          - "'PasswordAuthentication no' in ssh_compliance_check.stdout"
+        success_msg: "CIS Security hardening baseline verified successfully!"

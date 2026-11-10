@@ -1,0 +1,67 @@
+---
+# Reference Solution: System Baseline Configuration & Idempotency
+- name: Configure System Baseline Environment
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    base_dir: /tmp/practice_baseline
+    required_directories:
+      - { path: "{{ base_dir }}/config", mode: '0755' }
+      - { path: "{{ base_dir }}/secure", mode: '0700' }
+      - { path: "{{ base_dir }}/logs",   mode: '0775' }
+    security_settings:
+      - { regexp: '^MAX_FAILED_ATTEMPTS=', line: 'MAX_FAILED_ATTEMPTS=3' }
+      - { regexp: '^SESSION_TIMEOUT_SECONDS=', line: 'SESSION_TIMEOUT_SECONDS=900' }
+      - { regexp: '^ALLOW_ROOT_SSH=', line: 'ALLOW_ROOT_SSH=no' }
+
+  tasks:
+    - name: Ensure target directories exist with exact permissions
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "{{ item.mode }}"
+      loop: "{{ required_directories }}"
+
+    - name: Deploy authorized access banner (motd)
+      ansible.builtin.copy:
+        dest: "{{ base_dir }}/config/motd"
+        content: |
+          ****************************************************************
+          * WARNING: Authorized Access Only. All activities are audited. *
+          ****************************************************************
+        mode: '0644'
+
+    - name: Ensure security configuration file exists
+      ansible.builtin.file:
+        path: "{{ base_dir }}/config/security.conf"
+        state: touch
+        mode: '0600'
+        modification_time: preserve
+        access_time: preserve
+
+    - name: Enforce security parameters in configuration file
+      ansible.builtin.lineinfile:
+        path: "{{ base_dir }}/config/security.conf"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+      loop: "{{ security_settings }}"
+
+    - name: Create symlink pointing to active config directory
+      ansible.builtin.file:
+        src: "{{ base_dir }}/config"
+        dest: "{{ base_dir }}/current_config"
+        state: link
+        force: true
+
+    - name: Assert files and symlink were created correctly
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: file_check
+      failed_when: not file_check.stat.exists
+      loop:
+        - "{{ base_dir }}/config/motd"
+        - "{{ base_dir }}/config/security.conf"
+        - "{{ base_dir }}/current_config"

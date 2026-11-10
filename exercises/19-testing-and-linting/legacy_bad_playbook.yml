@@ -1,0 +1,21 @@
+---
+# ANTI-PATTERN EXAMPLE: Legacy, unlinted, non-idempotent playbook
+# (DO NOT USE IN PRODUCTION - USED AS A PRACTICE FIXTURE)
+- hosts: all
+  connection: local
+  gather_facts: false
+  tasks:
+    # Violation 1: Missing descriptive task name
+    - command: mkdir -p /tmp/bad_practice_dir
+
+    # Violation 2: Using shell/echo instead of copy/template
+    - shell: echo "hello=world" > /tmp/bad_practice_dir/app.conf
+
+    # Violation 3: Unquoted numeric octal mode (parses as decimal 644 instead of 0644 octal!)
+    - copy:
+        content: "test"
+        dest: /tmp/bad_practice_dir/test.txt
+        mode: 644
+
+    # Violation 4: Shell append instead of lineinfile (non-idempotent!)
+    - shell: echo "LOG_LEVEL=DEBUG" >> /tmp/bad_practice_dir/app.conf

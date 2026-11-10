@@ -1,0 +1,19 @@
+---
+# Starter Playbook: Refactor the bad playbook into clean, idempotent Ansible code
+- name: Refactored System Configuration
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    app_dir: /tmp/clean_practice_dir
+
+  tasks:
+    # Task 1: Create directory with proper module and mode
+    # TODO: Use ansible.builtin.file with state=directory and mode='0755'
+
+    # Task 2: Create initial configuration
+    # TODO: Use ansible.builtin.copy to write app.conf with mode='0644'
+
+    # Task 3: Idempotently add setting
+    # TODO: Use ansible.builtin.lineinfile for LOG_LEVEL=DEBUG

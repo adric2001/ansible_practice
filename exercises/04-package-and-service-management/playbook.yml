@@ -1,0 +1,37 @@
+---
+# Starter Playbook: Package & Service Management
+- name: Cross-Platform Package and Service Management
+  hosts: all
+  become: true
+
+  vars:
+    # Package mapping per OS Family
+    web_package_map:
+      Debian: apache2
+      RedHat: httpd
+      Darwin: nginx
+
+    common_utilities:
+      - curl
+      - git
+
+  tasks:
+    # Task 1: Select proper package name based on ansible_os_family
+    # TODO: Use set_fact to set 'web_server_package' from web_package_map[ansible_os_family]
+    - name: Determine web server package name
+      # Fill in set_fact
+
+    # Task 2: Install common utilities
+    # TODO: Use ansible.builtin.package with loop over common_utilities
+    - name: Install common utility packages
+      # Fill in module and parameters
+
+    # Task 3: Gather service facts
+    # TODO: Call ansible.builtin.service_facts
+    - name: Collect system service facts
+      # Fill in module
+
+    # Task 4: Ensure web server service is enabled and started (on Linux hosts)
+    # TODO: Use ansible.builtin.service with state=started and enabled=true
+    - name: Ensure web service is running and enabled
+      # Fill in module and parameters

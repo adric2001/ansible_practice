@@ -1,0 +1,23 @@
+---
+# Playbook executing against dynamic inventory groups
+- name: Audit Dynamic Cloud Fleet
+  hosts: env_prod
+  gather_facts: false
+
+  tasks:
+    - name: Display dynamic host metadata
+      ansible.builtin.debug:
+        msg: >
+          Host: {{ inventory_hostname }}
+          | Role: {{ server_role }}
+          | Region: {{ region }}
+          | IP: {{ ansible_host }}
+          | Cores: {{ cpu_cores }}
+          | Memory: {{ memory_mb }}MB
+
+    - name: Assert dynamic hostvars were injected
+      ansible.builtin.assert:
+        that:
+          - instance_id is defined
+          - server_role is defined
+          - deployment_env == 'prod'

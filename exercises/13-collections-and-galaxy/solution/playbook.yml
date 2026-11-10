@@ -1,0 +1,46 @@
+---
+# Reference Solution: Collections and FQCN
+- name: Practice Collections and FQCN
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    config_file: /tmp/collection_practice_app.ini
+
+  tasks:
+    - name: 1. Create initial INI configuration file
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        content: |
+          [database]
+          host = 127.0.0.1
+          port = 5432
+        mode: '0644'
+
+    - name: 2. Add pool_size using community.general.ini_file
+      community.general.ini_file:
+        path: "{{ config_file }}"
+        section: database
+        option: pool_size
+        value: "25"
+        no_extra_spaces: true
+        mode: '0644'
+
+    - name: 3. Add new telemetry section using community.general.ini_file
+      community.general.ini_file:
+        path: "{{ config_file }}"
+        section: telemetry
+        option: enabled
+        value: "true"
+        mode: '0644'
+
+    - name: 4. Assert values were written into INI file
+      ansible.builtin.command:
+        cmd: "grep -E '(pool_size=25|enabled=true)' {{ config_file }}"
+      register: ini_check
+      changed_when: false
+
+    - name: 5. Display success confirmation
+      ansible.builtin.debug:
+        msg: "Successfully used community.general collection modules with strict FQCN standard!"

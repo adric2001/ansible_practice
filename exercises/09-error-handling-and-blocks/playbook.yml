@@ -1,0 +1,51 @@
+---
+# Starter Playbook: Blocks, Rescue, & Error Handling
+- name: Database Migration with Automatic Rollback
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    db_lab_dir: /tmp/ansible_db_lab
+
+  tasks:
+    - name: Setup database directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ db_lab_dir }}/data"
+        - "{{ db_lab_dir }}/backups"
+
+    - name: Seed database with initial record
+      ansible.builtin.copy:
+        dest: "{{ db_lab_dir }}/data/users.db"
+        content: "USER_ID_101:Alice:Active\nUSER_ID_102:Bob:Active\n"
+        mode: '0644'
+
+    # Structured Migration Block
+    - name: Execute database schema migration with automatic rollback
+      block:
+        # TODO: Step 1: Backup current data to backups/
+        - name: Take snapshot backup
+          # Fill in copy or command
+
+        # TODO: Step 2: Create lockfile
+        - name: Create migration lockfile
+          # Fill in file state=touch
+
+        # TODO: Step 3: Simulate migration failure
+        - name: Run migration script (simulating failure)
+          ansible.builtin.command:
+            cmd: "bash -c 'exit 42'"
+
+      rescue:
+        # TODO: Restore backup and record rollback flag
+        - name: Restore data from snapshot backup
+          # Fill in restore task
+
+      always:
+        # TODO: Cleanup lockfile and record audit log
+        - name: Remove temporary lockfile
+          # Fill in cleanup task

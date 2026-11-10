@@ -1,0 +1,41 @@
+---
+# Reference Solution: Custom Jinja2 Filters
+- name: Practice Custom Jinja2 Filters
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    raw_storage_bytes: 53687091200  # 50 GB
+    api_token: "sk_live_998877665544332211"
+    csv_raw_servers: "  web01 , web02,db01,  lb01 ,  "
+
+  tasks:
+    - name: 1. Format raw bytes to human readable string
+      ansible.builtin.set_fact:
+        formatted_storage: "{{ raw_storage_bytes | bytes_to_human('GB') }}"
+        auto_storage: "{{ 1572864 | bytes_to_human }}"
+
+    - name: 2. Mask sensitive token
+      ansible.builtin.set_fact:
+        masked_token: "{{ api_token | mask_secret(4) }}"
+
+    - name: 3. Clean and parse messy CSV input
+      ansible.builtin.set_fact:
+        parsed_server_list: "{{ csv_raw_servers | split_and_trim }}"
+
+    - name: 4. Assert filter outputs match expected transformations
+      ansible.builtin.assert:
+        that:
+          - formatted_storage == '50.00 GB'
+          - auto_storage == '1.50 MB'
+          - masked_token == '**********************2211'
+          - parsed_server_list == ['web01', 'web02', 'db01', 'lb01']
+        success_msg: "All custom Jinja2 filter transformations passed perfectly!"
+
+    - name: 5. Display transformed outputs
+      ansible.builtin.debug:
+        msg:
+          - "Formatted Storage: {{ formatted_storage }}"
+          - "Masked Secret: {{ masked_token }}"
+          - "Parsed Server List: {{ parsed_server_list }}"

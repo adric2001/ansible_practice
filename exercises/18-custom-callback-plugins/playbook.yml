@@ -1,0 +1,17 @@
+---
+# Starter Playbook: Custom Callback Testing
+- name: Test Custom Callback Plugin
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Step 1 - Normal task
+      ansible.builtin.debug:
+        msg: "Executing normal test task"
+
+    - name: Step 2 - Simulated state change
+      ansible.builtin.copy:
+        dest: /tmp/callback_test.txt
+        content: "Testing callback event logging\n"
+        mode: '0644'

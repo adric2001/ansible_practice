@@ -1,0 +1,20 @@
+---
+- name: Ensure DB directory exists
+  ansible.builtin.file:
+    path: "{{ lab_root }}/db"
+    state: directory
+    mode: '0755'
+
+- name: Initialize database configuration
+  ansible.builtin.copy:
+    dest: "{{ lab_root }}/db/db.conf"
+    content: |
+      PORT={{ db_port }}
+      DATABASE={{ db_name }}
+      STATUS=ONLINE
+    mode: '0600'
+
+- name: Set dynamic fact for DB endpoint to be read by App Tier
+  ansible.builtin.set_fact:
+    database_endpoint: "postgresql://{{ inventory_hostname }}:{{ db_port }}/{{ db_name }}"
+    cacheable: true

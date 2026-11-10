@@ -1,0 +1,12 @@
+---
+- name: Ensure LB directory exists
+  ansible.builtin.file:
+    path: "{{ lab_root }}/lb"
+    state: directory
+    mode: '0755'
+
+- name: Deploy dynamic load balancer configuration from App Tier facts
+  ansible.builtin.template:
+    src: upstream.conf.j2
+    dest: "{{ lab_root }}/lb/loadbalancer.conf"
+    mode: '0644'

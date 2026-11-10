@@ -1,0 +1,19 @@
+---
+- name: Ensure App directory exists
+  ansible.builtin.file:
+    path: "{{ lab_root }}/app_{{ inventory_hostname }}"
+    state: directory
+    mode: '0755'
+
+- name: Retrieve database connection string from db01 hostvars
+  ansible.builtin.set_fact:
+    resolved_db_url: "{{ hostvars['db01']['database_endpoint'] }}"
+
+- name: Deploy application configuration with DB connection
+  ansible.builtin.copy:
+    dest: "{{ lab_root }}/app_{{ inventory_hostname }}/app.env"
+    content: |
+      APP_PORT={{ app_port }}
+      DATABASE_URL={{ resolved_db_url }}
+      WORKERS=4
+    mode: '0644'

@@ -1,0 +1,5 @@
+---
+# Internal constants for common_security role (high precedence)
+role_author: "Ansible Practice Core Team"
+role_internal_version: "2.5.0"
+security_schema_version: "v2"

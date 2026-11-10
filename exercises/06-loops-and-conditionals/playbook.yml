@@ -1,0 +1,52 @@
+---
+# Starter Playbook: Loops, Conditionals, and Control
+- name: Loops and Conditionals Mastery
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    user_catalog:
+      - name: alice
+        role: admin
+        shell: /bin/bash
+        groups: ["wheel", "devops"]
+      - name: bob
+        role: developer
+        shell: /bin/bash
+        groups: ["developers"]
+      - name: charlie
+        role: viewer
+        shell: /bin/sh
+        groups: []
+      - name: diana
+        role: admin
+        shell: /bin/zsh
+        groups: ["wheel"]
+
+    temp_test_dir: /tmp/ansible_loops_lab
+
+  tasks:
+    - name: Prepare test directory
+      ansible.builtin.file:
+        path: "{{ temp_test_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Task 1: Loop over users with conditional filtering and loop_control.label
+    # TODO: Write a simulated user creation (creating a file per user in {{ temp_test_dir }}/<username>.json)
+    # ONLY for users where role is 'admin' or 'developer'.
+    # Use loop_control.label to show only item.name.
+    - name: Create simulated user profiles
+      # Fill in module, loop, when, and loop_control
+
+    # Task 2: changed_when: false
+    # TODO: Run a shell command 'ls -la {{ temp_test_dir }}' and register output.
+    # Set changed_when: false so Ansible reports 'ok' instead of 'changed'.
+    - name: Inspect generated users
+      # Fill in command/shell and changed_when
+
+    # Task 3: Retry Polling with until
+    # TODO: Create a file that gets populated, then poll it with until until "READY" appears
+    - name: Poll service readiness
+      # Fill in until loop

@@ -1,0 +1,64 @@
+---
+# Reference Solution: Zero-Downtime Rolling Application Upgrade
+- name: Zero-Downtime Progressive Rolling Application Upgrade
+  hosts: webservers
+  gather_facts: false
+  serial:
+    - 1      # Canary release (1 host first)
+    - 2      # Next batch of 2 hosts
+    - "100%" # Remaining hosts
+  max_fail_percentage: 0
+
+  tasks:
+    - name: 1. Ensure lab tracking directory exists (Run Once)
+      ansible.builtin.file:
+        path: "{{ rolling_lab_dir }}"
+        state: directory
+        mode: '0755'
+      run_once: true
+      delegate_to: localhost
+
+    - name: 2. Send deployment initiation notification (Run Once)
+      ansible.builtin.lineinfile:
+        path: "{{ rolling_lab_dir }}/audit.log"
+        create: true
+        line: "DEPLOYMENT_START: Target fleet size {{ groups['webservers'] | length }} hosts"
+        mode: '0644'
+      run_once: true
+      delegate_to: localhost
+
+    - name: 3. Drain node from load balancer pool (Delegated to Controller)
+      ansible.builtin.lineinfile:
+        path: "{{ rolling_lab_dir }}/lb_active_pool.txt"
+        create: true
+        line: "{{ inventory_hostname }}:DRAINING"
+        mode: '0644'
+      delegate_to: localhost
+
+    - name: 4. Deploy application update on target host
+      ansible.builtin.copy:
+        dest: "{{ rolling_lab_dir }}/{{ inventory_hostname }}_version.txt"
+        content: "VERSION=2.5.0\nPORT={{ app_port }}\nHOST={{ inventory_hostname }}\n"
+        mode: '0644'
+
+    - name: 5. Execute internal health check probe
+      ansible.builtin.command:
+        cmd: "grep 'VERSION=2.5.0' {{ rolling_lab_dir }}/{{ inventory_hostname }}_version.txt"
+      register: health_check
+      changed_when: false
+
+    - name: 6. Re-register node as ACTIVE in load balancer pool (Delegated)
+      ansible.builtin.lineinfile:
+        path: "{{ rolling_lab_dir }}/lb_active_pool.txt"
+        regexp: "^{{ inventory_hostname }}:"
+        line: "{{ inventory_hostname }}:ACTIVE"
+        mode: '0644'
+      delegate_to: localhost
+
+    - name: 7. Post-deployment completion summary (Run Once at play end)
+      ansible.builtin.lineinfile:
+        path: "{{ rolling_lab_dir }}/audit.log"
+        line: "DEPLOYMENT_SUCCESS: All batches completed with 0 failures."
+        mode: '0644'
+      run_once: true
+      delegate_to: localhost

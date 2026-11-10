@@ -1,0 +1,34 @@
+---
+# Starter Playbook: Rolling Updates & Delegation
+- name: Zero-Downtime Rolling Application Upgrade
+  hosts: webservers
+  gather_facts: false
+
+  # TODO: Define serial batches:
+  # - 1 (canary)
+  # - 2
+  # - "100%"
+  # And max_fail_percentage: 0
+
+  tasks:
+    # Task 1: Run once notification
+    # TODO: Use run_once: true to create {{ rolling_lab_dir }}/deployment.start
+    - name: Announce start of rolling deployment
+      # Fill in run_once task
+
+    # Task 2: Drain node from Load Balancer
+    # TODO: Delegate to localhost to mark node draining in {{ rolling_lab_dir }}/lb_state.txt
+    - name: Drain node from load balancer pool
+      # Fill in delegate_to: localhost
+
+    # Task 3: Deploy updated version
+    - name: Deploy application update to host
+      ansible.builtin.copy:
+        dest: "{{ rolling_lab_dir }}/{{ inventory_hostname }}_version.txt"
+        content: "v2.5.0\n"
+        mode: '0644'
+
+    # Task 4: Re-enable node in Load Balancer
+    # TODO: Delegate to localhost to mark node active
+    - name: Re-enable node in load balancer pool
+      # Fill in delegate_to: localhost

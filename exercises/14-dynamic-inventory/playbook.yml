@@ -1,0 +1,14 @@
+---
+# Playbook executing against dynamic inventory groups
+- name: Audit Dynamic Cloud Fleet
+  hosts: env_prod
+  gather_facts: false
+
+  tasks:
+    - name: Display dynamic host metadata
+      ansible.builtin.debug:
+        msg: >
+          Host: {{ inventory_hostname }}
+          | Role: {{ role }}
+          | Region: {{ region }}
+          | IP: {{ ansible_host }}

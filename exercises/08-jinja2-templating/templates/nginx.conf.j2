@@ -1,0 +1,36 @@
+# {{ ansible_managed | default('Managed by Ansible') }}
+# Target Node: {{ inventory_hostname }}
+
+events {
+    worker_connections {{ worker_connections | default(1024) }};
+}
+
+http {
+    # Upstream pool configuration
+    upstream {{ app_name }}_backends {
+        # TODO: Loop through upstream_nodes and write 'server <ip>:<port> max_fails=3 fail_timeout=10s;'
+        {% for node in upstream_nodes %}
+        # write server line here
+        {% endfor %}
+    }
+
+    server {
+        listen {{ http_port | default(80) }};
+        server_name {{ server_domain }};
+
+        # TODO: If ssl_enabled is true, add redirect or ssl listen directives
+        {% if ssl_enabled | default(false) %}
+        # add ssl config here
+        {% endif %}
+
+        # TODO: Loop through routes list to render location blocks
+        # Each item has 'path' and 'backend_service'
+        {% for route in routing_rules %}
+        location {{ route.path }} {
+            proxy_pass http://{{ route.backend_service }};
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        {% endfor %}
+    }
+}

@@ -1,0 +1,16 @@
+# Starter Inventory (YAML Format)
+# Complete the YAML structure based on the INI specifications
+all:
+  vars:
+    ntp_server: pool.ntp.org
+  children:
+    local:
+      hosts:
+        localhost:
+          ansible_connection: local
+    bastion:
+      hosts:
+        bastion-01:
+          ansible_host: 10.0.0.1
+          ansible_port: 2200
+    # TODO: Define web group, databases group, production group, and staging group

@@ -1,0 +1,72 @@
+---
+# Reference Solution: Testing Custom Module dir_quota_guard
+- name: Test Custom dir_quota_guard Module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    quota_dir: /tmp/ansible_module_quota_lab
+
+  tasks:
+    - name: 1. Prepare clean test folder
+      ansible.builtin.file:
+        path: "{{ quota_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 2. Create 5 test files to exceed quota of 3
+      ansible.builtin.copy:
+        dest: "{{ quota_dir }}/file_{{ item }}.log"
+        content: "Log entry sample content for file {{ item }}\n"
+        mode: '0644'
+      loop: [1, 2, 3, 4, 5]
+
+    - name: 3. Run dir_quota_guard in audit-only mode (enforce_limit=false)
+      dir_quota_guard:
+        path: "{{ quota_dir }}"
+        max_files: 3
+        enforce_limit: false
+      register: audit_result
+
+    - name: 4. Assert quota breach was detected without deleting files
+      ansible.builtin.assert:
+        that:
+          - audit_result.quota_exceeded == true
+          - audit_result.current_file_count == 5
+          - audit_result.changed == false
+
+    - name: 5. Run dir_quota_guard with enforce_limit=true in check_mode (dry-run)
+      dir_quota_guard:
+        path: "{{ quota_dir }}"
+        max_files: 3
+        enforce_limit: true
+      check_mode: true
+      register: dry_run_result
+
+    - name: 6. Assert check mode reported changed without deleting
+      ansible.builtin.assert:
+        that:
+          - dry_run_result.changed == true
+          - dry_run_result.deleted_files | length == 2
+
+    - name: 7. Run dir_quota_guard with active enforcement
+      dir_quota_guard:
+        path: "{{ quota_dir }}"
+        max_files: 3
+        enforce_limit: true
+      register: enforce_result
+
+    - name: 8. Assert excess files were pruned down to quota
+      ansible.builtin.assert:
+        that:
+          - enforce_result.changed == true
+          - enforce_result.current_file_count == 3
+          - enforce_result.quota_exceeded == false
+          - enforce_result.deleted_files | length == 2
+
+    - name: 9. Cleanup test folder
+      ansible.builtin.file:
+        path: "{{ quota_dir }}"
+        state: absent

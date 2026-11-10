@@ -1,0 +1,19 @@
+---
+# Starter Playbook: Invoking Roles
+- name: Apply Common Security Role
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    # Task 1: Include role with default parameters
+    # TODO: Use ansible.builtin.include_role to invoke role 'common_security'
+    - name: Apply default security baseline
+      # Fill in include_role
+
+    # Task 2: Include role with overridden parameters
+    # TODO: Use ansible.builtin.include_role to invoke role 'common_security'
+    # with security_base_dir: /tmp/custom_security_override
+    # and security_audit_level: STRICT
+    - name: Apply strict security baseline
+      # Fill in include_role with vars

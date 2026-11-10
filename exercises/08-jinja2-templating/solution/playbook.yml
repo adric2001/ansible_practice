@@ -1,0 +1,60 @@
+---
+# Reference Solution: Jinja2 Templating Mastery
+- name: Practice Jinja2 Templating
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    app_name: api_gateway
+    server_domain: practice.internal
+    http_port: 8080
+    ssl_enabled: true
+    worker_connections: 2048
+    deploy_env: staging
+
+    upstream_nodes:
+      - ip: "10.0.1.10"
+        port: 5000
+      - ip: "10.0.1.11"
+        port: 5000
+      - ip: "10.0.1.12"
+        port: 5000
+
+    routing_rules:
+      - path: "/api/v1/auth"
+        backend_service: "auth_service:8081"
+      - path: "/api/v1/users"
+        backend_service: "user_service:8082"
+      - path: "/"
+        backend_service: "frontend_ui:3000"
+
+    output_dir: /tmp/ansible_template_lab
+
+  tasks:
+    - name: 1. Ensure output directory exists
+      ansible.builtin.file:
+        path: "{{ output_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 2. Render dynamic Nginx configuration from template
+      ansible.builtin.template:
+        src: templates/nginx.conf.j2
+        dest: "{{ output_dir }}/nginx.conf"
+        mode: '0644'
+
+    - name: 3. Verify rendered configuration content
+      ansible.builtin.command:
+        cmd: "grep -E '(upstream api_gateway_cluster|server 10.0.1.10:5000|listen 443 ssl|location /api/v1/auth)' {{ output_dir }}/nginx.conf"
+      register: grep_check
+      changed_when: false
+
+    - name: 4. Assert key blocks are present in generated configuration
+      ansible.builtin.assert:
+        that:
+          - "'upstream api_gateway_cluster' in grep_check.stdout"
+          - "'server 10.0.1.10:5000' in grep_check.stdout"
+          - "'listen 443 ssl' in grep_check.stdout"
+          - "'location /api/v1/auth' in grep_check.stdout"
+        success_msg: "Jinja2 template rendered all upstream, SSL, and routing blocks perfectly!"

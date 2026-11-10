@@ -1,0 +1,17 @@
+---
+# Starter Multi-Tier Orchestration Playbook
+# Complete the 3 plays in the correct order:
+# 1. dbservers
+# 2. appservers
+# 3. loadbalancers
+
+# Play 1: Database Tier
+- name: Deploy Database Tier
+  hosts: dbservers
+  gather_facts: false
+  roles:
+    - db
+
+# TODO: Play 2: Deploy Application Tier on 'appservers' using role 'app'
+
+# TODO: Play 3: Deploy Load Balancer Tier on 'loadbalancers' using role 'nginx_lb'

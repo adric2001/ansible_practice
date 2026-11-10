@@ -1,0 +1,91 @@
+---
+# Reference Solution: Blocks, Rescue, and Error Handling
+- name: Database Migration with Automatic Rollback
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    db_lab_dir: /tmp/ansible_db_lab
+
+  tasks:
+    - name: 1. Setup database environment directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ db_lab_dir }}/data"
+        - "{{ db_lab_dir }}/backups"
+
+    - name: 2. Seed database with initial records
+      ansible.builtin.copy:
+        dest: "{{ db_lab_dir }}/data/users.db"
+        content: "USER_ID_101:Alice:Active\nUSER_ID_102:Bob:Active\n"
+        mode: '0644'
+
+    - name: 3. Execute database schema migration with automatic rollback
+      block:
+        - name: Take snapshot backup before starting migration
+          ansible.builtin.copy:
+            src: "{{ db_lab_dir }}/data/users.db"
+            dest: "{{ db_lab_dir }}/backups/users_snapshot.db"
+            mode: '0644'
+
+        - name: Place migration transaction lock
+          ansible.builtin.file:
+            path: "{{ db_lab_dir }}/migration.lock"
+            state: touch
+            mode: '0644'
+
+        - name: Attempt schema migration (simulating controlled failure)
+          ansible.builtin.command:
+            cmd: "bash -c 'echo \"Executing migration step 1...\"; exit 137'"
+          register: migration_result
+
+      rescue:
+        - name: Catch failure and log rescue execution
+          ansible.builtin.debug:
+            msg: "Migration failed with rc {{ ansible_failed_result.rc | default('unknown') }}. Initiating rollback!"
+
+        - name: Restore database data from pre-migration snapshot
+          ansible.builtin.copy:
+            src: "{{ db_lab_dir }}/backups/users_snapshot.db"
+            dest: "{{ db_lab_dir }}/data/users.db"
+            mode: '0644'
+
+        - name: Create rollback incident marker
+          ansible.builtin.copy:
+            dest: "{{ db_lab_dir }}/ROLLBACK_EXECUTED"
+            content: "Rollback completed at {{ lookup('pipe', 'date') }}\n"
+            mode: '0644'
+
+      always:
+        - name: Remove temporary transaction lock (Always runs)
+          ansible.builtin.file:
+            path: "{{ db_lab_dir }}/migration.lock"
+            state: absent
+
+        - name: Append audit trail entry (Always runs)
+          ansible.builtin.lineinfile:
+            path: "{{ db_lab_dir }}/audit.log"
+            create: true
+            line: "MIGRATION_ATTEMPT_COMPLETED_STATUS={{ 'RESCUED' if ansible_failed_task is defined else 'SUCCESS' }}"
+            mode: '0644'
+
+    - name: 4. Assert that rollback succeeded and lock was removed
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: post_checks
+      failed_when: >
+        (item == db_lab_dir ~ '/migration.lock' and post_checks.stat.exists) or
+        (item == db_lab_dir ~ '/ROLLBACK_EXECUTED' and not post_checks.stat.exists) or
+        (item == db_lab_dir ~ '/data/users.db' and not post_checks.stat.exists)
+      loop:
+        - "{{ db_lab_dir }}/migration.lock"
+        - "{{ db_lab_dir }}/ROLLBACK_EXECUTED"
+        - "{{ db_lab_dir }}/data/users.db"
+
+    - name: 5. Display success confirmation
+      ansible.builtin.debug:
+        msg: "Error handling verified: Failure was caught, data rolled back, lock removed, and audit trail written!"

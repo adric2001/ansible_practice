@@ -1,0 +1,40 @@
+---
+# Reference Solution: Clean, Linted, Idempotent Playbook
+- name: Refactored System Configuration
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    app_dir: /tmp/clean_practice_dir
+    config_file: "{{ app_dir }}/app.conf"
+
+  tasks:
+    - name: Ensure target directory exists with strict permissions
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Deploy baseline application configuration
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        content: |
+          # Clean refactored configuration
+          SERVER_NAME=practice_app
+          ENVIRONMENT=production
+        mode: '0644'
+
+    - name: Idempotently enforce logging level setting
+      ansible.builtin.lineinfile:
+        path: "{{ config_file }}"
+        regexp: '^LOG_LEVEL='
+        line: 'LOG_LEVEL=DEBUG'
+        state: present
+        mode: '0644'
+
+    - name: Deploy static verification payload
+      ansible.builtin.copy:
+        dest: "{{ app_dir }}/test.txt"
+        content: "Idempotent linted test payload\n"
+        mode: '0644'

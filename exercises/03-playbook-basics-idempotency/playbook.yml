@@ -1,0 +1,39 @@
+---
+# Starter Playbook: System Baseline & Idempotency
+- name: Configure System Baseline Environment
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    base_dir: /tmp/practice_baseline
+
+  tasks:
+    # Task 1: Create Directories
+    # TODO: Use ansible.builtin.file with loop to create:
+    #   - "{{ base_dir }}/config" (mode: '0755')
+    #   - "{{ base_dir }}/secure" (mode: '0700')
+    #   - "{{ base_dir }}/logs"   (mode: '0775')
+    - name: Create baseline directory structure
+      ansible.builtin.file:
+        path: "{{ base_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Task 2: Deploy MOTD banner
+    # TODO: Use ansible.builtin.copy to write a warning banner to {{ base_dir }}/config/motd
+    - name: Deploy authorized access banner
+      # Fill in module and parameters
+
+    # Task 3: Enforce security configuration parameters using lineinfile
+    # TODO: Ensure the file exists and has the required lines:
+    #   - MAX_FAILED_ATTEMPTS=3
+    #   - SESSION_TIMEOUT_SECONDS=900
+    #   - ALLOW_ROOT_SSH=no
+    - name: Configure security settings
+      # Fill in module and parameters
+
+    # Task 4: Create Symlink
+    # TODO: Use ansible.builtin.file with state=link to link {{ base_dir }}/current_config -> {{ base_dir }}/config
+    - name: Create symlink to current config
+      # Fill in module and parameters

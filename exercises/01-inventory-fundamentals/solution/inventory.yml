@@ -1,0 +1,66 @@
+# Solution Inventory (YAML Format)
+all:
+  vars:
+    ntp_server: pool.ntp.org
+  children:
+    local:
+      hosts:
+        localhost:
+          ansible_connection: local
+    bastion:
+      hosts:
+        bastion-01:
+          ansible_host: 10.0.0.1
+          ansible_port: 2200
+    production:
+      vars:
+        env_type: production
+        monitoring_enabled: true
+      children:
+        web_prod:
+          hosts:
+            web-prod-01:
+              ansible_host: 192.168.10.11
+              ansible_port: 22
+              ansible_user: deploy
+            web-prod-02:
+              ansible_host: 192.168.10.12
+              ansible_port: 22
+              ansible_user: deploy
+        db_prod:
+          hosts:
+            db-prod-primary:
+              ansible_host: 192.168.10.50
+              ansible_port: 22
+              db_role: primary
+            db-prod-replica:
+              ansible_host: 192.168.10.51
+              ansible_port: 22
+              db_role: replica
+    staging:
+      vars:
+        env_type: staging
+        monitoring_enabled: false
+      children:
+        web_stage:
+          hosts:
+            web-stage-01:
+              ansible_host: 192.168.20.11
+              ansible_port: 2222
+              ansible_user: stageuser
+        db_stage:
+          hosts:
+            db-stage-01:
+              ansible_host: 192.168.20.50
+              ansible_port: 22
+              db_role: standalone
+    web:
+      vars:
+        http_port: 80
+      children:
+        web_prod:
+        web_stage:
+    databases:
+      children:
+        db_prod:
+        db_stage:

@@ -1,0 +1,3 @@
+# Host vars specific to localhost (overrides group_vars)
+deploy_environment: host_specific_override
+node_role: controller

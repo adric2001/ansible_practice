@@ -1,0 +1,28 @@
+---
+# Starter Playbook: Ansible Vault Integration
+- name: Deploy Application with Vault Secrets
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  # TODO: Load encrypted secret variables from vault_secret.yml using vars_files
+  vars_files:
+    # Fill in vault secret file
+
+  vars:
+    app_target_dir: /tmp/ansible_vault_lab
+
+  tasks:
+    - name: Ensure target directory exists
+      ansible.builtin.file:
+        path: "{{ app_target_dir }}"
+        state: directory
+        mode: '0700'
+
+    # Task: Deploy secrets to payment_service.env
+    # TODO: Use ansible.builtin.template or copy to render decrypted variables:
+    # - PAYMENT_API_KEY
+    # - DB_PASSWORD
+    # - JWT_KEY
+    - name: Render environment file with decrypted secrets
+      # Fill in task

@@ -1,0 +1,91 @@
+---
+# Reference Solution: Loops, Conditionals, and Task Control
+- name: Loops and Conditionals Mastery
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    user_catalog:
+      - name: alice
+        role: admin
+        shell: /bin/bash
+        groups: ["wheel", "devops"]
+      - name: bob
+        role: developer
+        shell: /bin/bash
+        groups: ["developers"]
+      - name: charlie
+        role: viewer
+        shell: /bin/sh
+        groups: []
+      - name: diana
+        role: admin
+        shell: /bin/zsh
+        groups: ["wheel"]
+
+    temp_test_dir: /tmp/ansible_loops_lab
+
+  tasks:
+    - name: 1. Ensure test directory exists
+      ansible.builtin.file:
+        path: "{{ temp_test_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: 2. Provision active team profiles with loop and conditional filter
+      ansible.builtin.copy:
+        dest: "{{ temp_test_dir }}/{{ item.name }}.json"
+        content: >-
+          {{
+            {
+              "username": item.name,
+              "role": item.role,
+              "shell": item.shell,
+              "groups": item.groups,
+              "index": loop_idx
+            } | to_nice_json
+          }}
+        mode: '0640'
+      loop: "{{ user_catalog }}"
+      loop_control:
+        label: "{{ item.name }} (Role: {{ item.role }})"
+        index_var: loop_idx
+      when:
+        - item.role in ['admin', 'developer']
+        - item.shell is defined
+
+    - name: 3. Verify user profiles created (read-only command with changed_when)
+      ansible.builtin.command:
+        cmd: "ls -1 {{ temp_test_dir }}"
+      register: dir_listing
+      changed_when: false
+      failed_when: "'alice.json' not in dir_listing.stdout"
+
+    - name: 4. Assert that viewer account (charlie) was skipped
+      ansible.builtin.assert:
+        that:
+          - "'charlie.json' not in dir_listing.stdout"
+          - "'bob.json' in dir_listing.stdout"
+        success_msg: "Filtering verified: charlie (viewer) correctly skipped!"
+
+    - name: 5. Simulate asynchronous service readiness initialization
+      ansible.builtin.shell: |
+        echo "INITIALIZING" > {{ temp_test_dir }}/status.txt
+        sleep 1
+        echo "READY" > {{ temp_test_dir }}/status.txt
+      changed_when: true
+
+    - name: 6. Poll status file until state is READY (retry loop)
+      ansible.builtin.command:
+        cmd: "cat {{ temp_test_dir }}/status.txt"
+      register: service_status
+      until: "'READY' in service_status.stdout"
+      retries: 5
+      delay: 1
+      changed_when: false
+
+    - name: 7. Clean up temporary directory
+      ansible.builtin.file:
+        path: "{{ temp_test_dir }}"
+        state: absent

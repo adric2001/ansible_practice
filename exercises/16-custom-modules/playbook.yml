@@ -1,0 +1,21 @@
+---
+# Starter Playbook: Custom Module
+- name: Test Custom dir_quota_guard Module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    quota_dir: /tmp/ansible_module_quota_lab
+
+  tasks:
+    - name: Prepare test folder
+      ansible.builtin.file:
+        path: "{{ quota_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Task: Call dir_quota_guard
+    # TODO: Invoke custom module dir_quota_guard with path and max_files: 3
+    - name: Audit directory quota with custom module
+      # Fill in dir_quota_guard module call

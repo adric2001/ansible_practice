@@ -1,0 +1,32 @@
+---
+# Reference Solution: Testing Custom Callback Plugin
+- name: Test Custom Callback Plugin
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: 1. Clean previous audit log if present
+      ansible.builtin.file:
+        path: /tmp/ansible_callback_audit.jsonl
+        state: absent
+
+    - name: 2. Execute sample computational task
+      ansible.builtin.debug:
+        msg: "Processing enterprise workload batch..."
+
+    - name: 3. Create sample test artifact
+      ansible.builtin.copy:
+        dest: /tmp/ansible_callback_test.txt
+        content: "Telemetry verification payload\n"
+        mode: '0644'
+
+    - name: 4. Simulate ignored non-fatal error
+      ansible.builtin.command:
+        cmd: "bash -c 'exit 5'"
+      ignore_errors: true
+
+    - name: 5. Cleanup test artifact
+      ansible.builtin.file:
+        path: /tmp/ansible_callback_test.txt
+        state: absent

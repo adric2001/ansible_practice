@@ -1,0 +1,44 @@
+---
+# Automated Verification Suite (Molecule Verify Style)
+- name: Verify Refactored Playbook Post-Conditions
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    app_dir: /tmp/clean_practice_dir
+    config_file: "{{ app_dir }}/app.conf"
+
+  tasks:
+    - name: 1. Check directory existence and permissions
+      ansible.builtin.stat:
+        path: "{{ app_dir }}"
+      register: dir_stat
+
+    - name: 2. Check configuration file existence
+      ansible.builtin.stat:
+        path: "{{ config_file }}"
+      register: conf_stat
+
+    - name: 3. Read configuration file contents
+      ansible.builtin.slurp:
+        src: "{{ config_file }}"
+      register: conf_content
+
+    - name: 4. Assert system state complies with quality standards
+      ansible.builtin.assert:
+        that:
+          - dir_stat.stat.exists == true
+          - dir_stat.stat.isdir == true
+          - dir_stat.stat.mode == '0755'
+          - conf_stat.stat.exists == true
+          - conf_stat.stat.mode == '0644'
+          - "'LOG_LEVEL=DEBUG' in (conf_content['content'] | b64decode)"
+          - "'SERVER_NAME=practice_app' in (conf_content['content'] | b64decode)"
+        fail_msg: "System verification failed: Acceptance criteria not satisfied!"
+        success_msg: "Verification PASSED! All file states, permissions, and settings conform."
+
+    - name: 5. Cleanup test directory
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: absent

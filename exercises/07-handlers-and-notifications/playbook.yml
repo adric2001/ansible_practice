@@ -1,0 +1,45 @@
+---
+# Starter Playbook: Handlers & Notifications
+- name: Practice Handlers and Notifications
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    lab_dir: /tmp/ansible_handlers_lab
+
+  tasks:
+    - name: Ensure lab directory exists
+      ansible.builtin.file:
+        path: "{{ lab_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Task 1: Write main config file
+    # TODO: Use copy module to write port config, and notify "web service reload"
+    - name: Write main web server configuration
+      # Fill in copy and notify
+
+    # Task 2: Write SSL config file
+    # TODO: Use copy module to write SSL certificate, and notify "web service reload"
+    - name: Write SSL virtual host configuration
+      # Fill in copy and notify
+
+    # Task 3: Force handlers to flush now before running healthcheck
+    # TODO: Use ansible.builtin.meta: flush_handlers
+    - name: Apply configuration changes immediately
+      # Fill in meta flush_handlers
+
+    # Task 4: Health check
+    - name: Verify service restarted by checking restart flag file
+      ansible.builtin.stat:
+        path: "{{ lab_dir }}/service_restarted.flag"
+      register: restart_check
+      failed_when: not restart_check.stat.exists
+
+  handlers:
+    # Handler: Simulate web service reload
+    # TODO: Write handler that touches {{ lab_dir }}/service_restarted.flag
+    # and listens on topic "web service reload"
+    - name: Restart Web Service
+      # Fill in handler task

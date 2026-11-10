@@ -1,0 +1,27 @@
+---
+# Starter Playbook: CIS Security Hardening
+- name: Apply CIS Security Hardening Baseline
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    hardening_root: /tmp/compliance_lab
+
+  tasks:
+    - name: Prepare hardening lab directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ hardening_root }}"
+        - "{{ hardening_root }}/ssh"
+        - "{{ hardening_root }}/sysctl"
+        - "{{ hardening_root }}/secure_keys"
+
+    # Task: Deploy hardened sshd_config from templates/sshd_config.j2
+    # TODO: Render template to {{ hardening_root }}/ssh/sshd_config mode='0600'
+
+    # Task: Deploy hardened kernel sysctl parameters
+    # TODO: Create {{ hardening_root }}/sysctl/99-security.conf

@@ -1,0 +1,21 @@
+---
+# Starter Playbook: Custom Jinja2 Filters
+- name: Practice Custom Jinja2 Filters
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    raw_storage_bytes: 53687091200  # 50 GB
+    api_token: "sk_live_998877665544332211"
+    csv_raw_servers: "  web01 , web02,db01,  lb01 ,  "
+
+  tasks:
+    # Task 1: Test bytes_to_human
+    # TODO: Use {{ raw_storage_bytes | bytes_to_human }}
+
+    # Task 2: Test mask_secret
+    # TODO: Use {{ api_token | mask_secret(4) }}
+
+    # Task 3: Test split_and_trim
+    # TODO: Use {{ csv_raw_servers | split_and_trim }}

@@ -1,0 +1,42 @@
+---
+# Reference Solution: Invoking Reusable Roles
+- name: Apply Common Security Role
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: 1. Apply baseline role with default parameters
+      ansible.builtin.include_role:
+        name: common_security
+      vars:
+        security_base_dir: /tmp/common_security_lab_default
+
+    - name: 2. Apply baseline role with customized override parameters
+      ansible.builtin.include_role:
+        name: common_security
+      vars:
+        security_base_dir: /tmp/common_security_lab_strict
+        security_audit_level: STRICT
+        security_banner_enabled: true
+
+    - name: 3. Verify both role invocations rendered their artifacts
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: role_artifacts
+      failed_when: not role_artifacts.stat.exists
+      loop:
+        - /tmp/common_security_lab_default/audit.conf
+        - /tmp/common_security_lab_default/security_banner.txt
+        - /tmp/common_security_lab_strict/audit.conf
+        - /tmp/common_security_lab_strict/security_banner.txt
+
+    - name: 4. Verify strict configuration has AUDIT_LEVEL=STRICT
+      ansible.builtin.command:
+        cmd: "grep 'AUDIT_LEVEL=STRICT' /tmp/common_security_lab_strict/audit.conf"
+      register: strict_check
+      changed_when: false
+
+    - name: 5. Display role execution success
+      ansible.builtin.debug:
+        msg: "Role successfully tested with both default and overridden parameters!"

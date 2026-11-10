@@ -1,0 +1,57 @@
+---
+# Reference Solution: Variables & Facts Precedence
+- name: Demonstrate Variable Precedence and Facts
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    play_level_var: "Defined in play header"
+    deploy_environment: "play_header_value"
+
+  tasks:
+    - name: 1. Display initial variable resolution
+      ansible.builtin.debug:
+        msg:
+          - "Original deploy_environment: {{ deploy_environment }} (Play-level vars beat host_vars)"
+          - "app_log_level from group_vars: {{ app_log_level }}"
+          - "cluster_datacenter: {{ cluster_datacenter }}"
+
+    - name: 2. Calculate memory in Gigabytes from ansible_facts
+      ansible.builtin.set_fact:
+        memory_gb: "{{ (ansible_facts['memtotal_mb'] | default(16384) / 1024) | round(2) }}"
+        system_os: "{{ ansible_facts['distribution'] | default(ansible_facts['system']) }}"
+        kernel_arch: "{{ ansible_facts['architecture'] }}"
+
+    - name: 3. Dynamic runtime override with set_fact (beats play vars)
+      ansible.builtin.set_fact:
+        deploy_environment: "dynamic_runtime_override"
+        cacheable: false
+
+    - name: 4. Verify set_fact won the precedence battle
+      ansible.builtin.assert:
+        that:
+          - deploy_environment == 'dynamic_runtime_override'
+        fail_msg: "Precedence check failed: set_fact should override play vars!"
+        success_msg: "Precedence verified: set_fact successfully took precedence."
+
+    - name: 5. Write structured JSON report to /tmp/system_report.json
+      ansible.builtin.copy:
+        dest: /tmp/system_report.json
+        mode: '0644'
+        content: >-
+          {{
+            {
+              "hostname": inventory_hostname,
+              "os": system_os,
+              "architecture": kernel_arch,
+              "memory_gb": memory_gb,
+              "environment": deploy_environment,
+              "log_level": app_log_level,
+              "datacenter": cluster_datacenter
+            } | to_nice_json
+          }}
+
+    - name: 6. Display generated report
+      ansible.builtin.debug:
+        msg: "Report generated at /tmp/system_report.json for {{ inventory_hostname }}"

@@ -1,0 +1,49 @@
+---
+# Reference Solution: Multi-Tier Orchestration Playbook
+# Play 1: Deploy Database Tier
+- name: Deploy Database Tier
+  hosts: dbservers
+  gather_facts: false
+  roles:
+    - db
+
+# Play 2: Deploy Application Tier (Depends on Database Facts)
+- name: Deploy Application Tier
+  hosts: appservers
+  gather_facts: false
+  roles:
+    - app
+
+# Play 3: Deploy Load Balancer Tier (Depends on Application Tier Topology)
+- name: Deploy Load Balancer Tier
+  hosts: loadbalancers
+  gather_facts: false
+  roles:
+    - nginx_lb
+
+# Play 4: Verification across all tiers
+- name: Verify Multi-Tier Topology
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Assert all tier configuration files were generated
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: tier_files
+      failed_when: not tier_files.stat.exists
+      loop:
+        - /tmp/multitier_lab/db/db.conf
+        - /tmp/multitier_lab/app_app01/app.env
+        - /tmp/multitier_lab/app_app02/app.env
+        - /tmp/multitier_lab/lb/loadbalancer.conf
+
+    - name: Verify Load Balancer contains both app instances
+      ansible.builtin.command:
+        cmd: "grep -E '(app01:8081|app02:8082)' /tmp/multitier_lab/lb/loadbalancer.conf"
+      register: lb_verify
+      changed_when: false
+
+    - name: Display deployment success
+      ansible.builtin.debug:
+        msg: "Multi-tier application stack successfully provisioned with cross-tier facts!"

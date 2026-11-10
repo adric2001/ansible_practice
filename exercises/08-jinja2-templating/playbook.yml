@@ -1,0 +1,43 @@
+---
+# Starter Playbook: Jinja2 Templating
+- name: Practice Jinja2 Templating
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    app_name: api_gateway
+    server_domain: practice.internal
+    http_port: 8080
+    ssl_enabled: true
+    worker_connections: 2048
+
+    upstream_nodes:
+      - ip: "10.0.1.10"
+        port: 5000
+      - ip: "10.0.1.11"
+        port: 5000
+      - ip: "10.0.1.12"
+        port: 5000
+
+    routing_rules:
+      - path: "/api/v1/auth"
+        backend_service: "auth_service:8081"
+      - path: "/api/v1/users"
+        backend_service: "user_service:8082"
+      - path: "/"
+        backend_service: "frontend_ui:3000"
+
+    output_dir: /tmp/ansible_template_lab
+
+  tasks:
+    - name: Ensure output directory exists
+      ansible.builtin.file:
+        path: "{{ output_dir }}"
+        state: directory
+        mode: '0755'
+
+    # Task: Render template
+    # TODO: Use ansible.builtin.template to render templates/nginx.conf.j2 to {{ output_dir }}/nginx.conf
+    - name: Render dynamic Nginx configuration
+      # Fill in template task

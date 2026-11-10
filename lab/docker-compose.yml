@@ -1,0 +1,49 @@
+services:
+  node-web01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible-lab-web01
+    hostname: web01
+    ports:
+      - "2221:22"
+    volumes:
+      - ./ssh_keys/id_rsa.pub:/home/ansible/.ssh/authorized_keys:ro
+    networks:
+      ansible-net:
+        ipv4_address: 172.28.0.11
+
+  node-web02:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible-lab-web02
+    hostname: web02
+    ports:
+      - "2222:22"
+    volumes:
+      - ./ssh_keys/id_rsa.pub:/home/ansible/.ssh/authorized_keys:ro
+    networks:
+      ansible-net:
+        ipv4_address: 172.28.0.12
+
+  node-db01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ansible-lab-db01
+    hostname: db01
+    ports:
+      - "2223:22"
+    volumes:
+      - ./ssh_keys/id_rsa.pub:/home/ansible/.ssh/authorized_keys:ro
+    networks:
+      ansible-net:
+        ipv4_address: 172.28.0.21
+
+networks:
+  ansible-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

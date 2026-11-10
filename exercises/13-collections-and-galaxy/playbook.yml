@@ -1,0 +1,28 @@
+---
+# Starter Playbook: Collections and FQCN
+- name: Practice Collections and FQCN
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    config_file: /tmp/collection_practice_app.ini
+
+  tasks:
+    # Task 1: Ensure target INI exists
+    - name: Create initial INI configuration file
+      ansible.builtin.copy:
+        dest: "{{ config_file }}"
+        content: |
+          [database]
+          host = 127.0.0.1
+          port = 5432
+        mode: '0644'
+
+    # Task 2: Use community.general.ini_file
+    # TODO: Use community.general.ini_file to update:
+    # section: database
+    # option: pool_size
+    # value: "25"
+    - name: Configure database pool size
+      # Fill in community.general.ini_file task

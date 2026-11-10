@@ -1,0 +1,35 @@
+---
+# Starter Playbook: Variables & Facts Precedence
+- name: Demonstrate Variable Precedence and Facts
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    # Play-level variable
+    play_level_var: "Defined in play header"
+    # Notice this also exists in host_vars/localhost.yml!
+    deploy_environment: "play_header_value"
+
+  tasks:
+    # Task 1: Print variables to observe which level wins
+    - name: Debug variable resolution
+      ansible.builtin.debug:
+        msg:
+          - "deploy_environment is currently: {{ deploy_environment }}"
+          - "app_log_level is: {{ app_log_level }}"
+
+    # Task 2: Calculate memory in Gigabytes from ansible_facts
+    # TODO: Use set_fact to calculate memory_gb = ansible_memtotal_mb / 1024
+    - name: Calculate memory in Gigabytes
+      # Fill in set_fact
+
+    # Task 3: Override deploy_environment dynamically using set_fact
+    # TODO: Use set_fact to set deploy_environment to 'dynamic_runtime_override'
+    - name: Override variable with set_fact
+      # Fill in set_fact
+
+    # Task 4: Output report to JSON file
+    # TODO: Use ansible.builtin.copy to write a formatted JSON report to /tmp/system_report.json
+    - name: Save report to /tmp/system_report.json
+      # Fill in copy module

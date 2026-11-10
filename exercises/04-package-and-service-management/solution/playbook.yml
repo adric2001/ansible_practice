@@ -1,0 +1,54 @@
+---
+# Reference Solution: Cross-Platform Package and Service Management
+- name: Cross-Platform Package and Service Management
+  hosts: all
+  become: "{{ ansible_connection != 'local' }}"
+  gather_facts: true
+
+  vars:
+    web_package_map:
+      Debian: apache2
+      RedHat: httpd
+      Darwin: nginx
+
+    web_service_map:
+      Debian: apache2
+      RedHat: httpd
+      Darwin: nginx
+
+    common_utilities:
+      - curl
+      - git
+
+  tasks:
+    - name: Set OS-specific package and service names
+      ansible.builtin.set_fact:
+        active_web_pkg: "{{ web_package_map[ansible_facts['os_family']] | default('apache2') }}"
+        active_web_svc: "{{ web_service_map[ansible_facts['os_family']] | default('apache2') }}"
+
+    - name: Display detected OS facts
+      ansible.builtin.debug:
+        msg: "Detected OS: {{ ansible_facts['distribution'] }} ({{ ansible_facts['os_family'] }}). Web pkg: {{ active_web_pkg }}"
+
+    - name: Install common utility packages using generic package module
+      ansible.builtin.package:
+        name: "{{ common_utilities }}"
+        state: present
+      when: ansible_facts['os_family'] != 'Darwin'
+
+    - name: Install platform-specific web server package
+      ansible.builtin.package:
+        name: "{{ active_web_pkg }}"
+        state: present
+      when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+
+    - name: Gather service facts to inspect running state
+      ansible.builtin.service_facts:
+      when: ansible_facts['os_family'] != 'Darwin'
+
+    - name: Ensure web server service is enabled and started
+      ansible.builtin.service:
+        name: "{{ active_web_svc }}"
+        state: started
+        enabled: true
+      when: ansible_facts['os_family'] in ['Debian', 'RedHat']
